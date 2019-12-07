@@ -218,5 +218,52 @@ app.get('/team_stats', function(req, res) {
             });
           });
 
+app.get('/player_info', function(req, res)
+{
+  var query1 = 'select * from football_players;';
+
+  db.any(query1)
+      .then(data => {
+        res.render('pages/player_info',{
+          my_title: "Player Info",
+          query1: data })
+        console.log(data[1]); })
+      .catch(error => {
+      
+          console.log('error', error);
+          res.render('pages/player_info', {
+              title: 'player_info',
+          })
+    });
+});
+
+app.get('/player_info/select_player', function(req, res)
+{
+
+  var player_select = req.query.player_select;
+
+  var football_players = "select id, name from football_players;";
+  var player_info = "select * FROM football_players where id = " + player_select + ";";
+  var football_games = "select count(*) FROM football_games where " + player_select + " = ANY(players);";
+
+  db.task('get-everything', task => {
+        return task.batch([
+            task.any(football_players),
+            task.any(player_info),
+            task.any(football_games)
+        ])
+        .then(data => {
+          res.render('pages/player_info',{
+            my_title: "Player Info",
+            football_players: data[0],
+            player_info: data[1][0],
+            football_games: data[2][0]
+          })
+          console.log(data[2][0]);
+        })
+    })
+
+});
+
 app.listen(3000);
 console.log('3000 is the magic port');

@@ -36,7 +36,15 @@ div.container
       th Wins
       th Losses
     tr
+      if (result_2)
+        for items in result_2
+          td.align-bottom(rowspan="1")=items.wins
+      if (result_3)
+        for items in result_3
+          td.align-bottom(rowspan="1")=items.losses
       //- TODO: Display the total number of wins here. This value should come from your server-side db query.
+    
       //- TODO: Display the total number of losses here. This value should come from your server-side db query.
+      
 
 include ../partials/footer.pug
